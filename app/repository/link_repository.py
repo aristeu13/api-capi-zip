@@ -49,3 +49,11 @@ class RepositoryLink:
         short_link = short_link_result if short_link_result else None
     
         return short_link
+    
+    def obter_link_long(self, short_link):
+        query = select(LinkShortModel.link_long).where(
+            LinkShortModel.short_link == short_link
+        )
+        link_long = self.db_session.execute(query).scalar()
+        
+        return link_long

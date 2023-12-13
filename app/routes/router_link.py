@@ -34,14 +34,14 @@ def short_link(link: LinkShortOut, user_login: UserModel = Depends(obter_usuario
         link_salve = RepositoryLink(db_session=db_session).salve_link(link_novo, user_login.id)
         return {"link_log": link_salve.link_long, "link_short": link_salve.short_link}
     
-@router.get('/{short_link}', response_class=RedirectResponse)
+@router.get('/redirect_short_link', response_class=RedirectResponse)
 def redirect_to_original_link(short_link: str, db_session: Session = Depends(get_db_session)):
-    link_long = RepositoryLink(db_session=db_session).obter_short_link_generate(short_link)
+    link_long = RepositoryLink(db_session=db_session).obter_link_long(short_link)
     
     if not link_long:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Link_short not default.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Link_short not found.")
     
-    return RedirectResponse(url=link_long)
+    return RedirectResponse(url=link_long, status_code=status.HTTP_302_FOUND)
 
 @router.get('/me_link_short/',response_model=list[LinkShortIn])
 def list_link(user: UserModel =  Depends(obter_usuario_logado) , db_session: Session = Depends(get_db_session)):
